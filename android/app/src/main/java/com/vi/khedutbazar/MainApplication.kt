@@ -1,4 +1,4 @@
-package com.vi.krushiva
+package com.vi.khedutbazar
 
 import android.app.Application
 import com.facebook.react.PackageList

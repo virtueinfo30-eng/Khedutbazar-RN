@@ -38,7 +38,7 @@ export const getFCMToken = async () => {
 
 export const saveFCMTokenToServer = async (token: string, apiToken: string) => {
   try {
-    const response = await fetch('https://krushiva.com/api/fcm/save-token', {
+    const response = await fetch('https://khedutbazar.in/api/fcm/save-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

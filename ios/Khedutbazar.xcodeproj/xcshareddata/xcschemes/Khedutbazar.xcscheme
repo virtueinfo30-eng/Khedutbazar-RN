@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "krushiva_RN.app"
-               BlueprintName = "krushiva_RN"
-               ReferencedContainer = "container:krushiva_RN.xcodeproj">
+               BuildableName = "Khedutbazar.app"
+               BlueprintName = "Khedutbazar"
+               ReferencedContainer = "container:Khedutbazar.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "krushiva_RNTests.xctest"
-               BlueprintName = "krushiva_RNTests"
-               ReferencedContainer = "container:krushiva_RN.xcodeproj">
+               BuildableName = "KhedutbazarTests.xctest"
+               BlueprintName = "KhedutbazarTests"
+               ReferencedContainer = "container:Khedutbazar.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "krushiva_RN.app"
-            BlueprintName = "krushiva_RN"
-            ReferencedContainer = "container:krushiva_RN.xcodeproj">
+            BuildableName = "Khedutbazar.app"
+            BlueprintName = "Khedutbazar"
+            ReferencedContainer = "container:Khedutbazar.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "krushiva_RN.app"
-            BlueprintName = "krushiva_RN"
-            ReferencedContainer = "container:krushiva_RN.xcodeproj">
+            BuildableName = "Khedutbazar.app"
+            BlueprintName = "Khedutbazar"
+            ReferencedContainer = "container:Khedutbazar.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

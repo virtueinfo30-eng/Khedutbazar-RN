@@ -4,13 +4,13 @@ import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestUserPermission, getFCMToken, saveFCMTokenToServer } from '../services/PushNotificationService';
-import { KRUSHIVA_URL } from '../constants/app';
+import { KHEDUTBAZAR_URL } from '../constants/app';
 
 const AUTH_TOKEN_KEY = 'authToken';
 
-function KrushivaWebViewScreen(): React.JSX.Element {
+function KhedutbazarWebViewScreen(): React.JSX.Element {
   const webViewRef = useRef<WebView>(null);
-  const [currentUrl, setCurrentUrl] = useState(KRUSHIVA_URL);
+  const [currentUrl, setCurrentUrl] = useState(KHEDUTBAZAR_URL);
   const [apiToken, setApiToken] = useState<string | null>(null);
 
   // Use a ref so the FCM token is always available synchronously
@@ -161,4 +161,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default KrushivaWebViewScreen;
+export default KhedutbazarWebViewScreen;

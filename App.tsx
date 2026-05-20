@@ -1,8 +1,8 @@
 import React from 'react';
-import KrushivaWebViewScreen from './src/screens/KrushivaWebViewScreen';
+import KhedutbazarWebViewScreen from './src/screens/KhedutbazarWebViewScreen';
 
 function App(): React.JSX.Element {
-  return <KrushivaWebViewScreen />;
+  return <KhedutbazarWebViewScreen />;
 }
 
 export default App;
