@@ -1,10 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Linking, Alert } from 'react-native';
-import WebView, { WebViewMessageEvent } from 'react-native-webview';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  BackHandler,
+  StyleSheet,
+  View,
+  Linking,
+  Alert,
+  StatusBar,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import WebView, { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestUserPermission, getFCMToken, saveFCMTokenToServer } from '../services/PushNotificationService';
-import { KHEDUTBAZAR_URL } from '../constants/app';
+import { KHEDUTBAZAR_URL, BRAND_COLOR } from '../constants/app';
 
 const AUTH_TOKEN_KEY = 'authToken';
 
@@ -13,9 +24,33 @@ function KhedutbazarWebViewScreen(): React.JSX.Element {
   const [currentUrl, setCurrentUrl] = useState(KHEDUTBAZAR_URL);
   const [apiToken, setApiToken] = useState<string | null>(null);
 
+  // Track whether the WebView has pages to go back to.
+  const canGoBackRef = useRef(false);
+
   // Use a ref so the FCM token is always available synchronously
   // inside event handlers without waiting for a re-render cycle.
   const fcmTokenRef = useRef<string | null>(null);
+
+  // ─── Android Hardware Back Button ───────────────────────────────────────────
+  // When the WebView has history, go back within it.
+  // When there is no more history, let the default behaviour run (minimize app).
+  const handleAndroidBack = useCallback(() => {
+    if (canGoBackRef.current && webViewRef.current) {
+      webViewRef.current.goBack();
+      return true; // event consumed — do NOT close the app
+    }
+    return false; // let Android close / minimize the app normally
+  }, []);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', handleAndroidBack);
+    return () => subscription.remove();
+  }, [handleAndroidBack]);
+
+  // Keep canGoBackRef in sync with the WebView navigation state.
+  const handleNavigationStateChange = (navState: WebViewNavigation) => {
+    canGoBackRef.current = navState.canGoBack;
+  };
 
   // Persist & restore apiToken across app restarts
   useEffect(() => {
@@ -56,7 +91,7 @@ function KhedutbazarWebViewScreen(): React.JSX.Element {
     // Handle foreground messages
     const unsubscribeOnMessage = messaging().onMessage(async remoteMessage => {
       console.log('Foreground message received!', remoteMessage);
-      Alert.alert('New Notification', remoteMessage.notification?.body || 'You have a new message.');
+      // Alert.alert('New Notification', remoteMessage.notification?.body || 'You have a new message.');
     });
 
     // Handle notification tap when app is in background
@@ -139,15 +174,44 @@ function KhedutbazarWebViewScreen(): React.JSX.Element {
   };
 
   return (
-    <View style={styles.container}>
-      <WebView
-        ref={webViewRef}
-        source={{ uri: currentUrl }}
-        style={styles.webView}
-        onMessage={handleWebViewMessage}
-        javaScriptEnabled={true}
-      />
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar backgroundColor={BRAND_COLOR} barStyle="light-content" />
+      <View style={styles.container}>
+        <WebView
+          ref={webViewRef}
+          source={{ uri: currentUrl }}
+          style={styles.webView}
+          onMessage={handleWebViewMessage}
+          onNavigationStateChange={handleNavigationStateChange}
+          javaScriptEnabled={true}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={BRAND_COLOR} />
+              <Text style={styles.loadingText}>Loading Khedutbazar...</Text>
+            </View>
+          )}
+          renderError={() => (
+            <View style={styles.errorContainer}>
+              <View style={styles.errorIconContainer}>
+                <Text style={styles.errorIcon}>⚠️</Text>
+              </View>
+              <Text style={styles.errorTitle}>Connection Problem</Text>
+              <Text style={styles.errorDescription}>
+                We're having trouble reaching Khedutbazar. Please check your internet connection and try again.
+              </Text>
+              <TouchableOpacity
+                style={styles.retryButton}
+                onPress={() => webViewRef.current?.reload()}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.retryButtonText}>Try Again</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -156,8 +220,76 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  safeArea: {
+    flex: 1,
+    backgroundColor: BRAND_COLOR,
+  },
   webView: {
     flex: 1,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 99,
+  },
+  loadingText: {
+    marginTop: 14,
+    fontSize: 15,
+    color: '#64748b',
+    fontWeight: '500',
+    fontFamily: 'System',
+  },
+  errorContainer: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    zIndex: 100,
+  },
+  errorIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#fee2e2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  errorIcon: {
+    fontSize: 36,
+  },
+  errorTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  errorDescription: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: BRAND_COLOR,
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 24,
+    shadowColor: BRAND_COLOR,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 
