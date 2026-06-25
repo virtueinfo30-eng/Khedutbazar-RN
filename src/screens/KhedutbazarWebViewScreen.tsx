@@ -19,6 +19,26 @@ import { KHEDUTBAZAR_URL, BRAND_COLOR } from '../constants/app';
 
 const AUTH_TOKEN_KEY = 'authToken';
 
+const INJECTED_JAVASCRIPT = `
+  (function() {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      while (target && target.tagName !== 'A') {
+        target = target.parentElement;
+      }
+      if (target && target.href && target.href.toLowerCase().startsWith('tel:')) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          type: 'OPEN_EXTERNAL_URL',
+          url: target.href
+        }));
+      }
+    }, true);
+  })();
+  true;
+`;
+
 function KhedutbazarWebViewScreen(): React.JSX.Element {
   const webViewRef = useRef<WebView>(null);
   const [currentUrl, setCurrentUrl] = useState(KHEDUTBAZAR_URL);
@@ -51,6 +71,19 @@ function KhedutbazarWebViewScreen(): React.JSX.Element {
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
     canGoBackRef.current = navState.canGoBack;
   };
+
+  const handleShouldStartLoadWithRequest = useCallback(
+    (request: { url: string }) => {
+      if (request.url.toLowerCase().startsWith('tel:')) {
+        Linking.openURL(request.url).catch(err =>
+          console.warn('Could not open dialer:', err)
+        );
+        return false;
+      }
+      return true;
+    },
+    []
+  );
 
   // Persist & restore apiToken across app restarts
   useEffect(() => {
@@ -168,6 +201,14 @@ function KhedutbazarWebViewScreen(): React.JSX.Element {
         }
         break;
 
+      case 'OPEN_EXTERNAL_URL':
+        if (data.url && data.url.toLowerCase().startsWith('tel:')) {
+          Linking.openURL(data.url).catch(err =>
+            console.warn('Could not open dialer:', err)
+          );
+        }
+        break;
+
       default:
         break;
     }
@@ -181,6 +222,9 @@ function KhedutbazarWebViewScreen(): React.JSX.Element {
           ref={webViewRef}
           source={{ uri: currentUrl }}
           style={styles.webView}
+          originWhitelist={['https://*', 'http://*']}
+          onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
+          injectedJavaScript={INJECTED_JAVASCRIPT}
           onMessage={handleWebViewMessage}
           onNavigationStateChange={handleNavigationStateChange}
           javaScriptEnabled={true}
