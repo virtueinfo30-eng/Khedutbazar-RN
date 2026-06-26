@@ -23,8 +23,8 @@
     "react-native-webview": "^13.16.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/preset-env": "^7.25.3",
+    "@babel/core": "^7.29.6",
+    "@babel/preset-env": "^7.29.4",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "20.1.0",
     "@react-native-community/cli-platform-android": "20.1.0",
@@ -46,5 +46,21 @@
   "engines": {
     "node": ">= 22.11.0"
   },
-  "packageManager": "yarn@3.6.4+sha512.e70835d4d6d62c07be76b3c1529cb640c7443f0fe434ef4b6478a5a399218cbaf1511b396b3c56eb03bc86424cff2320f6167ad2fde273aa0df6e60b7754029f"
+  "packageManager": "yarn@3.6.4+sha512.e70835d4d6d62c07be76b3c1529cb640c7443f0fe434ef4b6478a5a399218cbaf1511b396b3c56eb03bc86424cff2320f6167ad2fde273aa0df6e60b7754029f",
+  "resolutions": {
+    "shell-quote": "^1.8.4",
+    "@babel/plugin-transform-modules-systemjs": "^7.29.4",
+    "@babel/core": "^7.29.6",
+    "@grpc/grpc-js": "~1.9.16",
+    "protobufjs": "^7.6.1",
+    "ws": "^7.5.11",
+    "brace-expansion": "^5.0.6",
+    "joi": "^17.13.4",
+    "js-yaml": "^4.2.0",
+    "qs": "^6.15.2",
+    "tar": "^7.5.16",
+    "undici": "^6.27.0",
+    "launch-editor": "^2.14.1",
+    "fast-xml-parser": "^5.7.0"
+  }
 }
