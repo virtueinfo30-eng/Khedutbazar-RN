@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
+import { KHEDUTBAZAR_URL } from '../constants/app';
 
 export const requestUserPermission = async () => {
   if (Platform.OS === 'ios') {
@@ -38,7 +39,8 @@ export const getFCMToken = async () => {
 
 export const saveFCMTokenToServer = async (token: string, apiToken: string) => {
   try {
-    const response = await fetch('https://khedutbazar.in/api/fcm/save-token', {
+    const baseUrl = KHEDUTBAZAR_URL.endsWith('/') ? KHEDUTBAZAR_URL : `${KHEDUTBAZAR_URL}/`;
+    const response = await fetch(`${baseUrl}api/fcm/save-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
