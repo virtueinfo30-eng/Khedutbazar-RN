@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import { Platform } from 'react-native';
+import { Platform, PermissionsAndroid } from 'react-native';
 import { KHEDUTBAZAR_URL } from '../constants/app';
 
 export const requestUserPermission = async () => {
@@ -10,15 +10,19 @@ export const requestUserPermission = async () => {
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     return enabled;
   } else if (Platform.OS === 'android') {
-    // Android 13+ requires explicit permission
-    if (Platform.Version >= 33) {
-      const authStatus = await messaging().requestPermission();
-      return (
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL
+    if (Number(Platform.Version) >= 33) {
+      // Android 13+: shows the native system "Allow / Don't allow" dialog
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
       );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        await messaging().requestPermission();
+        return true;
+      }
+      return false;
     }
-    return true; // Auto-granted on older Android versions if in manifest
+    // Android 12 and below: notifications are auto-granted
+    return true;
   }
   return false;
 };
